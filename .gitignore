@@ -1,7 +1,8 @@
-# Исключаем сырые csv и все левые parquet, но разрешаем нужные в папке data/raw
+# Исключаем сырые csv и все левые parquet, но разрешаем нужные в папке data/raw и data/processed
 *.csv
 *.parquet
 !data/raw/*.parquet
+!data/processed/*.parquet
 !data/external/external_macro_data.csv
 
 # Python
