@@ -254,5 +254,62 @@ def run_multi_horizon_forecasting():
     print(f"Горизонт: {best_horizon} мес.")
     print(f"MAE: {results[best_horizon]['mae']:,.2f} руб.")
 
+def plot_presentation_forecasts():
+    print("\n" + "=" * 75)
+    print("ГЕНЕРАЦИЯ ГРАФИКОВ ДЛЯ ПРЕЗЕНТАЦИИ (Непрерывный прогноз)")
+    print("=" * 75)
+    
+    df = pd.read_parquet(FILE_PATH)
+    df["date"] = pd.to_datetime(df["date"])
+    df = df.sort_values(["territory_id", "category", "date"]).reset_index(drop=True)
+    
+    grouped_macro = df.groupby(["territory_id", "category"], observed=True)
+    df["cbr_rate_diff"] = grouped_macro["cbr_key_rate"].diff().fillna(0)
+    df["sentiment_diff"] = grouped_macro["macro_news_sentiment"].diff().fillna(0)
+    df["cbr_impact"] = df["cbr_rate_diff"] * df["rolling_mean_3"]
+    df["sentiment_impact"] = df["sentiment_diff"] * df["rolling_mean_3"]
+    df['recent_volatility'] = df[['lag_1', 'lag_2', 'lag_3']].std(axis=1).fillna(0) / (df['rolling_mean_3'] + 1)
+    df['sentiment_elasticity'] = df['sentiment_diff'] * df['recent_volatility']
+    df['news_regional_impact'] = df['sentiment_diff'] * df['market_access']
+    
+    for c in CAT_FEATURES:
+        df[c] = df[c].astype("category")
+
+    top_territories = df.groupby('territory_id')['value'].sum().nlargest(2).index.tolist()
+    top_cat = df['category'].value_counts().index[0]
+    
+    dates = sorted(df["date"].unique())
+    split_date = dates[-6] 
+    
+    train_df = df[df['date'] < split_date].dropna(subset=['value'] + FEATURES)
+    model = lgb.LGBMRegressor(**BEST_PARAMS)
+    model.fit(train_df[FEATURES], train_df['value'], categorical_feature=CAT_FEATURES)
+
+    for terr_id in top_territories:
+        df_plot = df[(df['territory_id'] == terr_id) & (df['category'] == top_cat)].dropna(subset=FEATURES).copy()
+        
+        train_local = df_plot[df_plot['date'] < split_date]
+        test_local = df_plot[df_plot['date'] >= split_date]
+        
+        if len(test_local) == 0: continue
+            
+        preds = model.predict(test_local[FEATURES])
+        
+        plt.figure(figsize=(12, 6))
+        plt.plot(train_local['date'], train_local['value'], color='#2c3e50', linewidth=2.5, marker='o', label='Обучение (Факт)')
+        plt.plot(test_local['date'], test_local['value'], color='#27ae60', linewidth=2.5, marker='o', label='Тест (Факт)')
+        plt.plot(test_local['date'], preds, color='#e67e22', linewidth=2.5, linestyle='--', marker='X', markersize=8, label='Прогноз (Модель)')
+        
+        plt.axvline(x=train_local['date'].iloc[-1], color='gray', linestyle=':')
+        plt.title(f'Качество прогноза нашей модели (МО {terr_id})', fontsize=14, fontweight='bold')
+        plt.grid(True, alpha=0.3)
+        plt.legend()
+        
+        out_name = f'my_real_forecast_top_{terr_id}.png'
+        plt.savefig(out_name, dpi=300, bbox_inches='tight')
+        plt.close()
+        print(f"Графики прогноза сохранены: {out_name}")
+
 if __name__ == "__main__":
     run_multi_horizon_forecasting()
+    plot_presentation_forecasts() 
