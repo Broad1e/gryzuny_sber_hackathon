@@ -47,12 +47,36 @@ pip install -r requirements.txt
 # 1. Генерация пространственных и временных признаков 
 python src/feature_engineering.py
 
-# 2. Обучение модели и получение прогнозов (LightGBM с новостями и ставкой ЦБ)
+# 2. Добавление новостей
+python src/news_integration2.py
+python src/news_integration_nlp.py
+
+# 3. Обучение модели и получение прогнозов
+
+#подбор параметров
+python src/train_horizons_optimized.py
+
+#без новостей
+python src/train_catboost.py
+python src/baseline_prophet.py
+python src/foundation_models.py
+python src/train_horizons_WO_news.py
+
+#с новостями
+python src/train_chronos2.py
+python src/train_horizons2.py
+python src/train_catboost2.py
 python src/train_horizons2_W_news.py
 
-# 3. Сравнение методов поиска шоков (Prophet vs Ruptures vs ML-Residuals)
+# 4. Сравнение методов поиска шоков (Prophet vs Ruptures vs ML-Residuals)
 python src/compare_cpd.py
 
-# 4. Оценка дополнительных Foundation Models (Chronos, TimesFM)
+# 5. Оценка дополнительных Foundation Models (Chronos, TimesFM)
 python src/foundation_models.py
+
+# 6. Пояснительная записка
+docs/МЕТОДОЛОГИЧЕСКИЙ ОТЧЁТ.pdf
+
+# 7. Презентация
+docs/Прогнозирование потребительских расходов и обнаружение структурных изменений.pdf
 ```
