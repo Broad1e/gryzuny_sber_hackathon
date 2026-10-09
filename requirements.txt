@@ -1,0 +1,11 @@
+pandas>=2.0.0
+numpy
+pyarrow
+lightgbm
+scikit-learn
+prophet
+ruptures
+matplotlib
+optuna
+torch
+chronos-forecasting

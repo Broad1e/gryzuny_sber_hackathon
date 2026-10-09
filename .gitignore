@@ -1,0 +1,21 @@
+# Исходные данные СберИндекса (тяжелые файлы)
+*.parquet
+*.csv
+!data/external/external_macro_data.csv
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+.venv/
+venv/
+env/
+
+# IDE и ОС
+.idea/
+.vscode/
+.DS_Store
+Thumbs.db
+
+# Jupyter
+.ipynb_checkpoints/

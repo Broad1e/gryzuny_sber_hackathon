@@ -1,0 +1,28 @@
+# Конфигурация модели прогнозирования
+model:
+  type: "LightGBMRegressor"
+  approach: "direct_forecasting"
+  n_horizons: 4
+
+# Оставили базовые гиперпараметры, так как автоматический подбор через Optuna привел к переобучению
+hyperparameters:
+  n_estimators: 100
+  learning_rate: 0.1
+  num_leaves: 31
+  max_depth: -1
+  random_state: 42
+  n_jobs: -1
+
+# Используемые признаки
+features:
+  time_lags: [1, 2, 3]
+  rolling_windows: [3]
+  spatial: ["spatial_lag_1"]
+  macro: ["cbr_key_rate", "macro_news_sentiment"]
+  categorical: ["territory_id", "category"]
+
+# Параметры кросс-валидации
+validation:
+  strategy: "expanding_window"
+  n_folds: 3
+  metrics: ["MAE", "R2"]
