@@ -1,3 +1,8 @@
+paths:
+  data_dir: "data/raw"
+  processed_dir: "data/processed"
+  output_dir: "output"
+
 # Конфигурация модели прогнозирования
 model:
   type: "LightGBMRegressor"
@@ -26,3 +31,4 @@ validation:
   strategy: "expanding_window"
   n_folds: 3
   metrics: ["MAE", "R2"]
+

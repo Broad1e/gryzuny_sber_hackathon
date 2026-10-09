@@ -44,15 +44,15 @@ pip install -r requirements.txt
 
 Последовательность запуска скриптов:
 ```bash
-# 1. Генерация признаков 
+# 1. Генерация пространственных и временных признаков 
 python src/feature_engineering.py
 
-# 2. Добавление макро-показателей
-python src/news_integration.py
+# 2. Обучение модели и получение прогнозов (LightGBM с новостями и ставкой ЦБ)
+python src/train_horizons2_W_news.py
 
-# 3. Обучение модели и получение прогнозов
-python src/train_horizons.py
-
-# 4. Сравнение методов поиска шоков
+# 3. Сравнение методов поиска шоков (Prophet vs Ruptures vs ML-Residuals)
 python src/compare_cpd.py
+
+# 4. Оценка дополнительных Foundation Models (Chronos, TimesFM)
+python src/foundation_models.py
 ```
