@@ -27,7 +27,6 @@ import torch
 from chronos import ChronosPipeline
 from transformers import TimesFm2_5ModelForPrediction
 
-  # ВНИМАНИЕ: укажите здесь свой путь к файлу consumption.parquet
 HORIZONS = [1, 3, 6, 12]
 SAMPLE_SIZE = 500  # Выборка для оценки, иначе расчет на CPU займет слишком много времени
 CHRONOS_MODEL_NAME = "amazon/chronos-t5-small"
@@ -88,9 +87,7 @@ def run_evaluation():
     timesfm_results = {}
 
     for h in HORIZONS:
-        print(f"\n{'#' * 70}")
-        print(f"Горизонт {h} мес.")
-        print(f"{'#' * 70}")
+        print(f"\nГоризонт {h} мес.")
 
         chr_true, chr_pred = [], []
         tfm_true, tfm_pred = [], []
