@@ -28,10 +28,8 @@ warnings.filterwarnings('ignore')
 logging.getLogger('cmdstanpy').setLevel(logging.ERROR)
 logging.getLogger('prophet').setLevel(logging.ERROR)
 
-# =====================================================================
-# НАСТРОЙКИ ЧУВСТВИТЕЛЬНОСТИ АЛГОРИТМОВ (Настройка гиперпараметров)
-# Снижение порога увеличивает чувствительность алгоритма найдет соответствующий алгоритм.
-# =====================================================================
+# Настройка гиперпараметров чувствительности алгоритмов
+# Снижение порога увеличивает чувствительность (алгоритмы находят больше точек).
 
 # 1. ML-Residuals: Во сколько раз ошибка должна превышать стандартное отклонение.
 # Рекомендуемое значение: 1.5. Меньшие значения приведут к гиперчувствительности.
@@ -44,8 +42,6 @@ PROPHET_SENSITIVITY = 0.2
 # 3. Ruptures (PELT): Множитель штрафа за добавление новой точки.
 # Рекомендуемое значение: 1.5.
 RUPTURES_PENALTY_MULT = 0.05
-
-# =====================================================================
 
 def compare_cpd_methods(data_dir):
     print("1. Загрузка данных...")
@@ -124,14 +120,11 @@ def compare_cpd_methods(data_dir):
     
     lgbm_dates = valid_ts[valid_ts['residual'] > threshold_ml]['date'].tolist()
 
-    # === ИТОГИ И ВИЗУАЛИЗАЦИЯ ===
-    print("\n" + "="*40)
-    print("ИТОГИ ПОИСКА ШОКОВ (Точек разладки)")
-    print("="*40)
+    # Итоги и визуализация
+    print("\nИтоги поиска шоков:")
     print(f"Prophet нашел: {len(prophet_dates)} шт. -> {[d.strftime('%Y-%m') for d in prophet_dates]}")
     print(f"Ruptures нашел: {len(ruptures_dates)} шт. -> {[d.strftime('%Y-%m') for d in ruptures_dates]}")
     print(f"ML-Residuals нашел: {len(lgbm_dates)} шт. -> {[d.strftime('%Y-%m') for d in lgbm_dates]}")
-    print("="*40)
     
     plt.figure(figsize=(16, 8))
     plt.plot(df_ts['date'], df_ts['value'], label='Фактические траты', color='black', linewidth=2.5)
